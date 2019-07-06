@@ -1,0 +1,66 @@
+
+
+int tiltSense = 5;      
+int tiltState;
+
+int led = 9;   
+int vibeMotor = 6; 
+
+int outputState = HIGH;
+
+int previousTiltState = LOW; 
+
+
+long time = 0;         
+
+long debounce = 50;    
+
+int switchState; 
+
+void setup()
+{
+  pinMode(tiltSense, INPUT_PULLUP);
+  pinMode(led, OUTPUT);
+  pinMode(vibeMotor, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  tiltState = digitalRead(tiltSense);
+  Serial.println(tiltState);
+
+  checkTiltStateChange();
+
+  checkDebounce();
+
+  invertOutput();
+
+  digitalWrite(led, outputState);
+  digitalWrite(vibeMotor, outputState);
+
+  
+  previousTiltState = tiltState;
+}
+
+void checkTiltStateChange() {
+  if (tiltState != previousTiltState) {
+    time = millis();
+  }
+}
+
+
+void checkDebounce() {
+  if ((millis() - time) > debounce) {
+    switchState = tiltState;
+  }
+}
+
+
+void invertOutput() {
+  if (switchState == HIGH) {
+    outputState = LOW;
+  }
+  else {
+    outputState = HIGH;
+  }
+}
